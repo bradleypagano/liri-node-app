@@ -55,15 +55,17 @@ function getMovie() {
 }
 
 function getSpotty(){
-    spotify.search({ type: "track", query: searchTerm }, function(err, data) {
+    spotify.search({ type: "track", query: searchTerm, limit: 5 }, function(err, data) {
         if (err) {
             console.log('Error occurred: ' + err);
         }
-        console.log("Artist: " + data.tracks.items[0].artists[0].name);
-        console.log("Song Title: " + data.tracks.items[0].name);
-        console.log("Spotify Preview: " + data.tracks.items[0].preview_url);
-        console.log("Album: " + data.tracks.items[0].album.name);
+        for (i=0; i < data.tracks.items.length; i++){
+        console.log("Artist: " + data.tracks.items[i].artists[0].name);
+        console.log("Song Title: " + data.tracks.items[i].name);
+        console.log("Spotify Preview: " + data.tracks.items[i].preview_url);
+        console.log("Album: " + data.tracks.items[i].album.name);
         console.log("----------------------");
+        }
       });
 }
 
