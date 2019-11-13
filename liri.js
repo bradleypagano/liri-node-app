@@ -6,27 +6,28 @@ var spotify = new Spotify(keys.spotify);
 var axios = require("axios");
 var moment = require("moment");
 var searchType = process.argv[2];
+var searchTerm = process.argv.slice(3).join(" ");
 
-switch (searchType){
-    case "concert-this":
-        searchTerm = process.argv.slice(3).join("-");
-        getConcert();
-        break;
-    case "spotify-this-song":
-        searchTerm = process.argv.slice(3).join(" ");
-        getSpotty();
-        break;
-    case "movie-this":
-        searchTerm = process.argv.slice(3).join("+");
-        getMovie();
-        break;
-    case "do-what-it-says":
-        console.log("Oh LAWD!!! Do What He Say!!!");
-        doStuff();
-        break;
+function liri (searchType, searchTerm) {
+    switch (searchType){
+        case "concert-this":
+            searchTerm = searchTerm.replace(" ", "-");
+            getConcert(searchTerm);
+            break;
+        case "spotify-this-song":
+            getSpotty(searchTerm);
+            break;
+        case "movie-this":
+            getMovie(searchTerm);
+            break;
+        case "do-what-it-says":
+            console.log("Oh LAWD!!! Do What He Say!!!");
+            doStuff();
+            break;
+    }
 }
 
-function getConcert() {
+function getConcert(searchTerm) {
     axios.get("https://api.seatgeek.com/2/events?client_id=OTA1MzgzM3wxNTcyNTMzMTQ3Ljk3&performers.slug=" + searchTerm)
     .then(function(response){
         for(i=0; i < response.data.events.length; i++){
@@ -39,7 +40,8 @@ function getConcert() {
     })
 }
 
-function getMovie() {
+function getMovie(searchTerm) {
+    searchTerm = searchTerm || 'Mr. Nobody';
     axios.get("http://www.omdbapi.com/?i=tt3896198&apikey=2e52b219&t=" + searchTerm)
     .then(function(response){
             console.log("Title: " + response.data.Title);
@@ -54,7 +56,7 @@ function getMovie() {
     })
 }
 
-function getSpotty(){
+function getSpotty(searchTerm){
     spotify.search({ type: "track", query: searchTerm, limit: 5 }, function(err, data) {
         if (err) {
             console.log('Error occurred: ' + err);
@@ -70,27 +72,13 @@ function getSpotty(){
 }
 
 function doStuff(){
-    let stuff = process.argv[3];
-    let term = process.argv.slice(4).join("+");
-    fs.appendFile("random.txt","," + stuff + "," + term, "utf8", function(err){
-        if (err){
-            console.log(err);
-        }
-    })
     fs.readFile("random.txt", "utf8", function(err, data){
         if (err){
             console.log(err);
         }
+        const dataArr = data.split(',');
+        liri(dataArr[0], dataArr[1]);
     })
-        switch(stuff){
-            case "concert-this":
-                getConcert();
-                break;
-            case "spotify-this-song":
-                getSpotty();
-                break;
-            case "movie-this":
-                getMovie();
-                break;
-        }
-}
+};
+
+liri (searchType, searchTerm);
