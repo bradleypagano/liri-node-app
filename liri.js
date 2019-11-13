@@ -1,4 +1,5 @@
 require("dotenv").config();
+var fs = require("fs");
 var keys = require("./keys.js");
 var spotify = new Spotify(keys.spotify);
 var axios = require("axios");
@@ -11,6 +12,7 @@ switch (searchType){
         getConcert();
         break;
     case "spotify-this-song":
+        searchTerm = process.argv.slice(3).join("+");
         console.log("spotify");
         getSpotty();
         break;
@@ -20,6 +22,7 @@ switch (searchType){
         break;
     case "do-what-it-says":
         console.log("Oh LAWD!!! Do What He Say!!!");
+        doStuff();
         break;
 }
 
@@ -50,6 +53,34 @@ function getMovie() {
             console.log("------------------------");
     })
 }
-function getSpotty(){
 
+function getSpotty(){
+    axios.get("https://api.spotify.com/v1/search?q=" + searchTerm)
+}
+
+function doStuff(){
+    var stuff = process.argv[3];
+    term = process.argv.slice(4).join("+");
+    fs.appendFile("random.txt","," + stuff + "," + term, "utf8", function(err){
+        if (err){
+            console.log(err);
+        }
+    })
+    fs.readFile("random.txt", "utf8", function(err, data){
+        if (err){
+            console.log(err);
+        }
+    })
+        switch(searchBy){
+            case "concert-this":
+                getConcert();
+                break;
+            case "spotify-this-song":
+                console.log("spotify");
+                getSpotty();
+                break;
+            case "movie-this":
+                getMovie();
+                break;
+        }
 }
