@@ -1,22 +1,21 @@
-//require("dotenv").config();
-//var keys = require("./keys.js");
-//var spotify = new Spotify(keys.spotify);
+require("dotenv").config();
+var keys = require("./keys.js");
+var spotify = new Spotify(keys.spotify);
 var axios = require("axios");
-//var moment = require("moment");
+var moment = require("moment");
 var searchType = process.argv[2];
 
 switch (searchType){
     case "concert-this":
         searchTerm = process.argv.slice(3).join("-");
-        console.log("concert");
         getConcert();
         break;
     case "spotify-this-song":
         console.log("spotify");
+        getSpotty();
         break;
     case "movie-this":
         searchTerm = process.argv.slice(3).join("+");
-        console.log("movie");
         getMovie();
         break;
     case "do-what-it-says":
@@ -30,7 +29,7 @@ function getConcert() {
         for(i=0; i < response.data.events.length; i++){
             console.log("Venue: " + response.data.events[i].venue.name);
             console.log("Located in: " + response.data.events[i].venue.display_location);
-            console.log("Time: " + response.data.events[i].datetime_local);
+            console.log("Date: " + moment(response.data.events[i].datetime_local).format("MM/DD/YYYY"));
             console.log("--------------------");
         }
         
@@ -50,4 +49,7 @@ function getMovie() {
             console.log("Actors: " + response.data.Actors);
             console.log("------------------------");
     })
+}
+function getSpotty(){
+
 }
